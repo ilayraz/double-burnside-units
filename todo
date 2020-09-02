@@ -1,5 +1,3 @@
-* Check if gap stores automorphism group
-* Translate isoms into product groups to check for conjugates
-* Check if any branches fail
+V * Check if any branches fail
 * Take quotient with isoms from single burnside ring
 * For each isomorphism class (up to centralizer and normalizer) how many branches?

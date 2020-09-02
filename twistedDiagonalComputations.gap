@@ -3,7 +3,7 @@
 # G is direct product group
 # TODO: Opposite Group shenenigans??
 IsomorphismToTwistedDiagonalSubgroup := function(G, f)
-    local e1, e2, generators;
+    local e1, e2, fGens, generators;
 
     # If trivial subgroup, just return it
     if Size(Source(f)) = 1 then
@@ -13,7 +13,8 @@ IsomorphismToTwistedDiagonalSubgroup := function(G, f)
 
     e1 := Embedding(G, 1);
     e2 := Embedding(G, 2);
-    generators := List(GeneratorsOfGroup(Source(f)), el -> Image(e2, el) * Image(e1, Image(f, el)));
+    fGens := GeneratorsOfGroup(Source(f));
+    generators := List(fGens, el -> Image(e2, el) * Image(e1, Image(f, el)));
 
     return Group(generators);
 end;
@@ -63,17 +64,60 @@ IsomorphismConjugateOrbit := function(G, H, K, isom)
     return conjugates;
 end;
 
+# Compute list of non-conjugate group isomorphisms H->K
+# in G. Verify conjugacy in GxG.
+# Returns a tuple of (isomorphisms, and the corresponding twisted diagonal subgroup of G2)
+NonconjugateIsomorphisms := function(G2, H, K)
+    local isoms, isom, twists, twist, nonconjugateIsoms, nonconjugateTwist, isConjugate;
+
+    isoms := GroupIsomorphisms(H, K);
+    if isoms = fail then
+        return [[], []];
+    fi;
+
+    nonconjugateIsoms := [];
+    twists := [];
+
+    # If possible use the identity isomorphism instead of its conjugates
+    if H = K then
+        isom := IdentityMapping(H);
+        twist := IsomorphismToTwistedDiagonalSubgroup(G2, isom);
+        Add(nonconjugateIsoms, isom);
+        Add(twists, twist);
+    fi;
+
+    for isom in isoms do
+        twist := IsomorphismToTwistedDiagonalSubgroup(G2, isom);
+        isConjugate := false;
+
+        for nonconjugateTwist in twists do
+            if IsConjugate(G2, twist, nonconjugateTwist) then
+                isConjugate := true;
+                break;
+            fi;
+        od;
+
+        if not isConjugate then
+            Add(nonconjugateIsoms, isom);
+            Add(twists, twist);
+
+            Print("Found nonconjugate isom: ", isom, "\n");
+        fi;
+    od;
+
+    return [nonconjugateIsoms, twists];
+end;
 
 # Compute list of non-conjugate group isomorphisms H->K
 # in G
-NonconjugateIsomorphisms := function(G,H,K)
+NonconjugateIsomorphismsOld := function(G,H,K)
     local HCoset, KCoset, isoms, isom, conjugates, result, orbit;
 
     conjugates := [];
     result := [];
     isoms := GroupIsomorphisms(H, K);
     if isoms = fail then
-        return [];
+        return [[], []];
     fi;
 
     HCoset := RightTransversal(
@@ -99,43 +143,57 @@ NonconjugateIsomorphisms := function(G,H,K)
         fi;
     od;
 
-    return result;
+    return [result, []];
 end;
 
 # Compute all the valid isomorphisms from list returned by GroupPartition
-SubgroupIsoms := function(G, groupsSubs)
-    local isoClass, subs, H, K, i, j, isoms, result, subresult;
+SubgroupIsoms := function(G, G2, groupsSubs)
+    local isoClass, subs, H, K, i, j, isoms, subisoms, subtwists, isomsList, twistsList, isomsTwists, twists, inverses;
 
-    result := [];
+    isomsList := [];
+    twistsList := [];
+
     for isoClass in groupsSubs do
         for subs in isoClass do
-            subresult := [];
+            subisoms := [];
+            subtwists := [];
 
             for i in [1..Size(subs)] do
                 H := subs[i];
                 for j in [i..Size(subs)] do
                     K := subs[j];
 
-                    isoms := NonconjugateIsomorphisms(G,H,K);
+                    isomsTwists := NonconjugateIsomorphisms(G2,H,K);
+                    # isomsTwists := NonconjugateIsomorphismsOld(G, H, K);
+                    isoms := isomsTwists[1];
+                    twists := isomsTwists[2];
 
                     if i = 1 then
-                        Add(subresult, isoms);
+                        Add(subisoms, isoms);
+                        Add(subtwists, twists);
 
                         if i <> j then
-                            Add(subresult, List(isoms, f -> InverseGeneralMapping(f)));
+                            inverses := List(isoms, f -> InverseGeneralMapping(f));
+                            Add(subisoms, inverses);
+                            Add(subtwists, List(inverses, f -> IsomorphismToTwistedDiagonalSubgroup(G2, f)));
                         fi;
                     else
-                        Append(subresult[i], isoms);
+                        Append(subisoms[i], isoms);
+                        Append(subtwists[i], twists);
 
                         if i <> j then
-                            Append(subresult[j], List(isoms, f -> InverseGeneralMapping(f)));
+                            inverses := List(isoms, f -> InverseGeneralMapping(f));
+                            Append(subisoms[j], inverses);
+                            Append(subtwists[j], List(inverses, f -> IsomorphismToTwistedDiagonalSubgroup(G2, f)));
                         fi;
                     fi;
                 od;
             od;
-            Append(result, subresult);
+            Append(isomsList, subisoms);
+            Append(twistsList, subtwists);
+
         od;
     od;
 
-    return result;
+    return isomsList;
 end;

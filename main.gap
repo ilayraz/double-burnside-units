@@ -16,23 +16,29 @@ Main := function(G)
 
     G2 := DirectProduct(G,G);
     subgroups := GroupPartition(G);
-    standard := SubgroupIsoms(G, subgroups);
+    standard := SubgroupIsoms(G, G2, subgroups);
 
     isomsTwists := FilterTwists(G, G2, standard);
     isoms := isomsTwists[1];
     twists := isomsTwists[2];
 
     tom := ComputeTableOfMarks(G2, Flat(twists));
+
+    Print("Transposing matrix...\n");
     TransposedMatDestructive(tom);
+
+    Print("Inverting matrix...\n");
     tom := Inverse(tom);
 
     subresults := StartWalk(G, isoms, tom);
     subresults := List(subresults, res -> tom * res);
 
+    Print("Got results: ", subresults, "\n");
+
     standard := Flat(standard);
 
-
-    results := GroupProduct(G, subresults, standard);
+    Print("Computing semidirect product with outer automorphism subgroup...\n");
+    results := GroupProduct(G, G2, subresults, standard);
 
     return [standard, results];
 end;

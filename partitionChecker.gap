@@ -63,6 +63,8 @@ end;
 FilterTwists := function(G, G2, isomsList)
     local isoms, isom, doubleNorm, norm, twist, twists, tempIsoms, isomsRet, twistsRet;
 
+    Print("Filtering from all twisted diagonal subgroups to viable ones\n");
+
     isomsRet := [];
     twistsRet := [];
 

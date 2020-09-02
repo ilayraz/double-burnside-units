@@ -3,6 +3,8 @@
 ComputeMark := function(G, U, V)
     local cosets, coset, mark;
 
+    Print("Computing mark of ", U, "with ", V, "\n");
+
     mark := 0;
     cosets := DoubleCosetRepsAndSizes(G,U,V);
 
@@ -19,6 +21,8 @@ end;
 # Assumes the first entry in subs is G itself
 ComputeTableOfMarks := function(G, subs)
     local i, j, U, V, mark, matrix, row;
+
+    Print("Computing table of marks... for ", Size(subs), " elements\n");
 
     matrix := [];
 
