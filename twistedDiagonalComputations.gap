@@ -68,7 +68,7 @@ end;
 # in G. Verify conjugacy in GxG.
 # Returns a tuple of (isomorphisms, and the corresponding twisted diagonal subgroup of G2)
 NonconjugateIsomorphisms := function(G2, H, K)
-    local isoms, isom, twists, twist, nonconjugateIsoms, nonconjugateTwist, isConjugate;
+    local isoms, isom, twists, twist, nonconjugateIsoms, isConjugate;
 
     isoms := GroupIsomorphisms(H, K);
     if isoms = fail then
@@ -88,14 +88,7 @@ NonconjugateIsomorphisms := function(G2, H, K)
 
     for isom in isoms do
         twist := IsomorphismToTwistedDiagonalSubgroup(G2, isom);
-        isConjugate := false;
-
-        for nonconjugateTwist in twists do
-            if IsConjugate(G2, twist, nonconjugateTwist) then
-                isConjugate := true;
-                break;
-            fi;
-        od;
+        isConjugate := ForAny(twists, t -> IsConjugate(G2, twist, t));
 
         if not isConjugate then
             Add(nonconjugateIsoms, isom);
@@ -164,7 +157,6 @@ SubgroupIsoms := function(G, G2, groupsSubs)
                     K := subs[j];
 
                     isomsTwists := NonconjugateIsomorphisms(G2,H,K);
-                    # isomsTwists := NonconjugateIsomorphismsOld(G, H, K);
                     isoms := isomsTwists[1];
                     twists := isomsTwists[2];
 

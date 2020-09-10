@@ -1,3 +1,7 @@
 V * Check if any branches fail
 * Take quotient with isoms from single burnside ring
 * For each isomorphism class (up to centralizer and normalizer) how many branches?
+
+N_G(V)
+m = U\G/N_G(V)
+m * O(N_G(V))/O(V) = m*[N_G(V) : V]
