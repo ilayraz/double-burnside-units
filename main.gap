@@ -24,8 +24,9 @@ Main := function(G)
 
     tom := ComputeTableOfMarks(G2, Flat(twists));
 
-    Print("Transposing matrix...\n");
-    TransposedMatDestructive(tom);
+    Print("Aligning matrix...\n");
+    # tom := Reversed(TransposedMat(Reversed(TransposedMat(tom))));
+    tom := TransposedMat(tom);
 
     Print("Inverting matrix...\n");
     tom := Inverse(tom);
@@ -40,5 +41,5 @@ Main := function(G)
     Print("Computing semidirect product with outer automorphism subgroup...\n");
     results := GroupProduct(G, G2, subresults, standard);
 
-    return [standard, results];
+    return [standard, results, tom];
 end;

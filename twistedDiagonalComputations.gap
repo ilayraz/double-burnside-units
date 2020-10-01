@@ -141,15 +141,13 @@ end;
 
 # Compute all the valid isomorphisms from list returned by GroupPartition
 SubgroupIsoms := function(G, G2, groupsSubs)
-    local isoClass, subs, H, K, i, j, isoms, subisoms, subtwists, isomsList, twistsList, isomsTwists, twists, inverses;
+    local isoClass, subs, H, K, i, j, isoms, subisoms, isomsList, inverses, isomsTwists;
 
     isomsList := [];
-    twistsList := [];
 
     for isoClass in groupsSubs do
         for subs in isoClass do
             subisoms := [];
-            subtwists := [];
 
             for i in [1..Size(subs)] do
                 H := subs[i];
@@ -158,32 +156,26 @@ SubgroupIsoms := function(G, G2, groupsSubs)
 
                     isomsTwists := NonconjugateIsomorphisms(G2,H,K);
                     isoms := isomsTwists[1];
-                    twists := isomsTwists[2];
 
                     if i = 1 then
-                        Add(subisoms, isoms);
-                        Add(subtwists, twists);
-
-                        if i <> j then
+                        if j = 1 then
+                            Add(subisoms, isoms);
+                        else
                             inverses := List(isoms, f -> InverseGeneralMapping(f));
+                            Append(subisoms[1], isoms);
                             Add(subisoms, inverses);
-                            Add(subtwists, List(inverses, f -> IsomorphismToTwistedDiagonalSubgroup(G2, f)));
                         fi;
                     else
                         Append(subisoms[i], isoms);
-                        Append(subtwists[i], twists);
 
                         if i <> j then
                             inverses := List(isoms, f -> InverseGeneralMapping(f));
-                            Append(subisoms[j], inverses);
-                            Append(subtwists[j], List(inverses, f -> IsomorphismToTwistedDiagonalSubgroup(G2, f)));
+                            Append(subisoms[1], isoms);
                         fi;
                     fi;
                 od;
             od;
             Append(isomsList, subisoms);
-            Append(twistsList, subtwists);
-
         od;
     od;
 
