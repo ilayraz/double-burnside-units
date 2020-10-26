@@ -115,7 +115,7 @@ OrthogonalElement := function(G2, T, standard)
 end;
 
 # Compute the semi-direct product of a normal subgroup of orthogonal bifree double burnside ring of G, T,
-# with the positive embeddings of Out(G).
+# with the positive embedding of Out(G).
 # standard: choice for the basis for the bifree subgroup
 GroupProduct := function(G, G2, T, standard)
     local out, aut, t, result, results, i, element, product;

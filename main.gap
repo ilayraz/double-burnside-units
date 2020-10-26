@@ -34,12 +34,14 @@ Main := function(G)
     subresults := StartWalk(G, isoms, tom);
     subresults := List(subresults, res -> tom * res);
 
-    Print("Got results: ", subresults, "\n");
+    Print("Got results of size: ",Size(subresults), "\n");
 
     standard := Flat(standard);
 
     Print("Computing semidirect product with outer automorphism subgroup...\n");
     results := GroupProduct(G, G2, subresults, standard);
+
+    results := subresults;
 
     return [standard, results, tom];
 end;
