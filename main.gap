@@ -11,21 +11,33 @@ GroupPartition := function(G)
 end;
 
 
+# Compute sublist whose basis is composed only of identity morphisms
+# Note that this function assumes that if an element in the basis
+# is conjugate to an identity morphism, then the element choosen is the identity morphism itself
+EmbeddedSubgroup := function(basis, G)
+    local identityCoordinates;
+
+    identityCoordinates := List(basis, f -> IdentityMapping(Source(f)) = f);
+    return Filtered(G,
+                    g -> ForAll([1..Size(basis)],
+                                i -> g[i] = 0 or identityCoordinates[i]));
+end;
+
+
 Main := function(G)
-    local G2, subgroups, isoms, twists, isomsTwists, tom, results, standard, el;
+    local G2, subgroups, isoms, twists, isomsTwists, tom, results, basis, el;
 
     G2 := DirectProduct(G,G);
     subgroups := GroupPartition(G);
-    standard := SubgroupIsoms(G, G2, subgroups);
+    isoms := SubgroupIsoms(G, G2, subgroups);
 
-    isomsTwists := FilterTwists(G, G2, standard);
+    isomsTwists := FilterTwists(G, G2, isoms);
     isoms := isomsTwists[1];
     twists := isomsTwists[2];
 
     tom := ComputeTableOfMarks(G2, Flat(twists));
 
     Print("Aligning matrix...\n");
-    # tom := Reversed(TransposedMat(Reversed(TransposedMat(tom))));
     tom := TransposedMat(tom);
 
     Print("Inverting matrix...\n");
@@ -36,7 +48,7 @@ Main := function(G)
 
     Print("Got results of size: ",Size(results), "\n");
 
-    standard := Flat(standard);
+    basis := Flat(isoms);
 
-    return [standard, results];
+    return [basis, results];
 end;

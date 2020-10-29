@@ -30,7 +30,7 @@ CheckComponent := function(mat, vector, element, numPad)
         Append(newVector, Zero([1..numPad]));
         return newVector;
     else
-        Print("Got nonintegral result (", product, ") for ", newVector, "\n");
+        # Print("Got nonintegral result (", product, ") for ", newVector, "\n");
         return fail;
     fi;
 end;
@@ -105,7 +105,5 @@ StartWalk := function(G, twistsList, tom)
     vector := ZeroList(twistsList[1]);
     vector[1] := center;
 
-    Remove(twistsList, 1);
-
-    return WalkTree(G, twistsList, tom, usedGroups, vector);
+    return WalkTree(G, twistsList{[2..Size(twistsList)]}, tom, usedGroups, vector);
 end;
