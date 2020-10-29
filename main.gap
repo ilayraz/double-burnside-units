@@ -12,7 +12,7 @@ end;
 
 
 Main := function(G)
-    local G2, subgroups, isoms, twists, isomsTwists, tom, subresults, results, standard, el;
+    local G2, subgroups, isoms, twists, isomsTwists, tom, results, standard, el;
 
     G2 := DirectProduct(G,G);
     subgroups := GroupPartition(G);
@@ -31,17 +31,12 @@ Main := function(G)
     Print("Inverting matrix...\n");
     tom := Inverse(tom);
 
-    subresults := StartWalk(G, isoms, tom);
-    subresults := List(subresults, res -> tom * res);
+    results := StartWalk(G, isoms, tom);
+    results := List(results, res -> tom * res);
 
-    Print("Got results of size: ",Size(subresults), "\n");
+    Print("Got results of size: ",Size(results), "\n");
 
     standard := Flat(standard);
 
-    Print("Computing semidirect product with outer automorphism subgroup...\n");
-    results := GroupProduct(G, G2, subresults, standard);
-
-    results := subresults;
-
-    return [standard, results, tom];
+    return [standard, results];
 end;

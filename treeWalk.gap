@@ -30,7 +30,7 @@ CheckComponent := function(mat, vector, element, numPad)
         Append(newVector, Zero([1..numPad]));
         return newVector;
     else
-        # Print("Got nonintegral result (", product, ") for ", newVector, "\n");
+        Print("Got nonintegral result (", product, ") for ", newVector, "\n");
         return fail;
     fi;
 end;

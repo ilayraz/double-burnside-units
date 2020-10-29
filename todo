@@ -2,6 +2,9 @@
 * For each isomorphism class (up to centralizer and normalizer) how many branches?
 * Take quotient with isoms from single burnside ring
 
+* Find order+index of subgroup with only identity isomorphism as basis
+* write isom finder without smallgroup
+
 N_G(V)
 m = U\G/N_G(V)
 m * O(N_G(V))/O(V) = m*[N_G(V) : V]
