@@ -1,7 +1,6 @@
 # Compute (Source, f, Dest)
 # Goes from isomorphism to twisted diagonal subgroup
 # G is direct product group
-# TODO: Opposite Group shenenigans??
 IsomorphismToTwistedDiagonalSubgroup := function(G, f)
     local e1, e2, fGens, generators;
 

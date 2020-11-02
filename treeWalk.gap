@@ -1,6 +1,5 @@
 # Compute the result of multiplying a matrix with a vector at the last element of vector only
 # mat: lower-triangular matrix
-# vector: vector
 ElementMultiply := function(mat, vector)
     local result, length, row, i, element;
 

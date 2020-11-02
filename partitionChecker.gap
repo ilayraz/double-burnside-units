@@ -2,6 +2,7 @@
 # by isomorphism classes
 SubgroupPartitionByIsomorphism := function(G)
     local subgroups, groupPartition, group, rep, id, idval, list;
+
     subgroups := ConjugacyClassesSubgroups(G);
     groupPartition := rec();
 
@@ -16,6 +17,35 @@ SubgroupPartitionByIsomorphism := function(G)
     list := List(RecNames(groupPartition), name -> groupPartition.(name));
     Sort(list, function(u,v) return Size(u[1]) > Size(v[1]); end);
     return list;
+end;
+
+# Partition all non-conjugate subgroups of G by checking directly for isomorphism
+# Use when group is too large for IdGroup to work
+SubgroupPartitionByIsomorphismLarge := function (G)
+    local subgroups, groupPartition, group, rep, partition, foundPartition;
+
+    subgroups := ConjugacyClassesSubgroups(G);
+    groupPartition := [];
+
+    for group in subgroups do
+        rep := Representative(group);
+        foundPartition := false;
+
+        for partition in groupPartition do
+            if IsomorphismGroups(rep, partition[1]) <> fail then
+                foundPartition := true;
+                Add(partition, rep);
+                break;
+            fi;
+        od;
+
+        if foundPartition = false then
+            Add(groupPartition, [rep]);
+        fi;
+    od;
+
+    Sort(groupPartition, function(u,v) return Size(u[1]) > Size(v[1]); end);
+    return groupPartition;
 end;
 
 # Take a group G and a list of lists of subgroups of G
@@ -90,4 +120,19 @@ FilterTwists := function(G, G2, isomsList)
     od;
 
     return [isomsRet, twistsRet];
+end;
+
+# Compute all valid subgroups of G, up to normalizer/centralizer step
+GroupPartition := function(G)
+    local subgroups;
+
+    subgroups := SubgroupPartitionByIsomorphism(G);
+    return GroupsPartitionByNormalizerCentralizer(G, subgroups);
+end;
+
+GroupPartitionLarge := function(G)
+    local subgroups;
+
+    subgroups := SubgroupPartitionByIsomorphismLarge(G);
+    return GroupsPartitionByNormalizerCentralizer(G, subgroups);
 end;
